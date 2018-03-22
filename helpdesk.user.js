@@ -3,6 +3,7 @@
 // @namespace lnrdgmz
 // @match *://helpdesk.makerpass.com/admin/help-desk/*
 // @grant GM.getResourceUrl
+// @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.5/dist/lodash.js
 // @resource soundA https://raw.githubusercontent.com/KDE/oxygen/master/sounds/Oxygen-Im-Contact-In.ogg
 // @resource soundB https://raw.githubusercontent.com/KDE/oxygen/master/sounds/Oxygen-Sys-Special.ogg
@@ -71,26 +72,13 @@ let aBuff, bBuff;
  * makeSoundFunc takes a buffer of audio data and plays it through the previously created AudioContext
  */
 
-const makeSoundFirefox = (buffer) => {
+const makeSoundFunc = (buffer) => {
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.connect(ctx.destination);
   source.loop = false;
   source.start(0);
 }
-
-const makeSoundChrome = buffer => {
-  const gainNode = ctx.createGain()
-  gainNode.gain.value = 0.5;
-  gainNode.connect(ctx.destination);
-  const oscillator = ctx.createOscillator();
-  oscillator.connect(gainNode);
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(300, ctx.currentTime); // value in hertz
-  oscillator.start();
-  oscillator.stop(ctx.currentTime + 0.5)
-}
-const makeSoundFunc = navigator.userAgent.includes('Firefox') ? makeSoundFirefox : makeSoundChrome;
 
 let makeSound = _.throttle(makeSoundFunc, Infinity, { leading: false, trailing: true });
 
