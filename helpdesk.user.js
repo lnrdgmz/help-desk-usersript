@@ -15,24 +15,24 @@ const myStudents = [
 
 ];
 
-const notificationFrequencyInSecs = 20;
+const notificationFrequency = 20000;
 
 /**
  * Add a button for toggling sound notifications and create click handlers
  */
 
 const enableSound = () => {
-  const interval = setInterval(checkOpen, 10);
+  makeSound = _.throttle(makeSoundFunc, notificationFrequency, { leading: true, trailing: false })
   const button = document.getElementById('toggle-btn');
   button.onclick = () => {
-    disableSound(interval);
+    disableSound();
   }
   button.innerHTML = "Disable audio notifications"
 }
 
-const disableSound = (interval) => {
+const disableSound = () => {
   makeSound.cancel()
-  clearInterval(interval);
+  makeSound = _.throttle(makeSoundFunc, Infinity, { leading: false, trailing: true })
   const button = document.getElementById('toggle-btn');
   button.onclick = () => {
     enableSound();
@@ -41,7 +41,7 @@ const disableSound = (interval) => {
 }
 
 const buttonStyle = "position:absolute; top:0px; right:0px";
-const toggleButton = document.createElement('button'); //`<button onclick="enableSound()" id="toggle-btn" style="${buttonStyle}">Enable audio notifications</button>`
+const toggleButton = document.createElement('button');
 toggleButton.onclick = enableSound;
 toggleButton.setAttribute('id', 'toggle-btn');
 toggleButton.innerText = 'Enable sound notifications';
@@ -68,17 +68,17 @@ let aBuff, bBuff;
 })()
 
 /**
- * makeSound takes a buffer of audio data and plays it through the previously created AudioContext
+ * makeSoundFunc takes a buffer of audio data and plays it through the previously created AudioContext
  */
 
-let makeSound = (buffer) => {
+const makeSoundFunc = (buffer) => {
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.connect(ctx.destination);
   source.loop = false;
   source.start(0);
 }
-makeSound = _.throttle(makeSound, notificationFrequencyInSecs * 1000);
+let makeSound = _.throttle(makeSoundFunc, Infinity, { leading: false, trailing: true });
 
 /**
  * Functions for finding open tickets
@@ -106,6 +106,7 @@ function checkOpen() {
     makeSound(bBuff);
   }
 }
+setInterval(checkOpen, 100);
 
 const highlightTicket = (node) => {
   let style = node.getAttribute('style') || '';
