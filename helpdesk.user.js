@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Help Desk Plus
 // @namespace lnrdgmz
-// @match *://helpdesk.makerpass.com/admin/help-desk/*
+// @match *://helpdesk.makerpass.com/admin/*
 // @grant GM.getResourceUrl
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @require https://raw.githubusercontent.com/lodash/lodash/4.17.5/dist/lodash.js
