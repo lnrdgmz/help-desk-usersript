@@ -71,13 +71,27 @@ let aBuff, bBuff;
  * makeSoundFunc takes a buffer of audio data and plays it through the previously created AudioContext
  */
 
-const makeSoundFunc = (buffer) => {
+const makeSoundFirefox = (buffer) => {
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.connect(ctx.destination);
   source.loop = false;
   source.start(0);
 }
+
+const makeSoundChrome = buffer => {
+  const gainNode = ctx.createGain()
+  gainNode.gain.value = 0.5;
+  gainNode.connect(ctx.destination);
+  const oscillator = ctx.createOscillator();
+  oscillator.connect(gainNode);
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(300, ctx.currentTime); // value in hertz
+  oscillator.start();
+  oscillator.stop(ctx.currentTime + 0.5)
+}
+const makeSoundFunc = navigator.userAgent.includes('Firefox') ? makeSoundFirefox : makeSoundChrome;
+
 let makeSound = _.throttle(makeSoundFunc, Infinity, { leading: false, trailing: true });
 
 /**
